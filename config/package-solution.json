@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "m-365-toolkit-spfx-client-side-solution",
+    "id": "3e5d6026-eaf0-4940-abf8-55b0ee0a2152",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "m365-toolkit-spfx description"
+      },
+      "longDescription": {
+        "default": "m365-toolkit-spfx description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "m-365-toolkit-spfx Feature",
+        "description": "The feature that activates elements of the m-365-toolkit-spfx solution.",
+        "id": "17395d69-aa35-4112-a528-2581e25142ec",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/m-365-toolkit-spfx.sppkg"
+  }
+}
