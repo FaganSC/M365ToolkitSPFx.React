@@ -1,42 +1,80 @@
 import * as React from 'react';
 import styles from './TestWebPart.module.scss';
 import type { ITestWebPartProps } from './ITestWebPartProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+import { M365Toolkit } from '../../../toolkit/M365Toolkit';
+import { PrimaryButton } from '@fluentui/react';
 
-export default class TestWebPart extends React.Component<ITestWebPartProps> {
+interface ITestWebPartState {
+  items: any[];
+  nextLink?: string;
+  previousLink?: string;
+  count?: number;
+}
+
+export default class TestWebPart extends React.Component<ITestWebPartProps, ITestWebPartState> {
+  constructor(props: ITestWebPartProps) {
+    super(props);
+    this.state = {
+      items: [],
+      nextLink: undefined,
+      previousLink: undefined,
+      count: undefined
+    };
+  }
+
+  public async componentDidMount(): Promise<void> {
+    const temp = await M365Toolkit
+      .SPSite(this.props.context)
+      .SPWeb()
+      .SPList
+      .getByTitle('Customers')
+      .SPItems
+      .select('Title')
+      .top(1)
+      .get();
+    this.setState({ items: temp.value, nextLink: temp['odata.nextLink'] });
+  }
+
+  private async fetchMoreItems(url: string): Promise<void> {
+    if (this.state.nextLink) {
+      const response = await M365Toolkit
+        .SPSite(this.props.context)
+        .SPWeb()
+        .SPList
+        .getByUrl(url)
+        .SPItems
+        .get();
+      this.setState((prevState) => ({
+        items: [...prevState.items, ...response.value],
+        nextLink: response['odata.nextLink'],
+        previousLink: response['odata.previousLink'],
+        count: response['odata.count']
+      }));
+    }
+  }
+
   public render(): React.ReactElement<ITestWebPartProps> {
     const {
-      description,
-      isDarkTheme,
-      environmentMessage,
       hasTeamsContext,
-      userDisplayName
     } = this.props;
 
     return (
       <section className={`${styles.testWebPart} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
+        <h3>Fetched Items (JSON):</h3>
+        <pre>
+          {JSON.stringify(this.state.items, null, 2)}
+        </pre>
+        {this.state.nextLink && (
+          <PrimaryButton onClick={() => this.fetchMoreItems(this.state.nextLink!)} text="Next Items" />
+        )}
+        {this.state.previousLink && (
+          <PrimaryButton onClick={() => this.fetchMoreItems(this.state.previousLink!)} text="Prevoius Items" />
+        )}
+        {this.state.count !== undefined && (
+          <div>
+            <p>Total Count: {this.state.count}</p>
+          </div>
+        )}
       </section>
     );
   }

@@ -25,6 +25,7 @@ export default class TestWebPartWebPart extends BaseClientSideWebPart<ITestWebPa
     const element: React.ReactElement<ITestWebPartProps> = React.createElement(
       TestWebPart,
       {
+        context: this.context,
         description: this.properties.description,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,

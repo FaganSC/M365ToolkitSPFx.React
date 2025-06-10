@@ -19,7 +19,7 @@ module.exports = {
         // Require regular expressions to be constructed from string constants rather than dynamically building strings at runtime. https://www.npmjs.com/package/@rushstack/eslint-plugin-security
         '@rushstack/security/no-unsafe-regexp': 1,
         // STANDARDIZED BY:   @typescript-eslint\eslint-plugin\dist\configs\recommended.json
-        '@typescript-eslint/adjacent-overload-signatures': 1,
+        '@typescript-eslint/adjacent-overload-signatures': 0,
         // RATIONALE:         Code is more readable when the type of every variable is immediately obvious.
         //                    Even if the compiler may be able to infer a type, this inference will be unavailable
         //                    to a person who is reviewing a GitHub diff.  This rule makes writing code harder,
